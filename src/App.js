@@ -11,9 +11,9 @@ import "./App.css"; // Assurez-vous que ce fichier est bien importé
 import ChatBot from "./chatbot";
 
 
-// Adresse du contrat et du token Coral
-const contractAddress = "0x6820AE88d1B6F2792f4eCBfAd09F77bfBdFF1bf8";
-const coralTokenAddress = "0xAF93888cbD250300470A1618206e036E11470149";
+// Adresse du contrat et du token Sonic
+const contractAddress = "0x2Fc0071a3eBaCF4236395061Df03ee5ec354963f";
+const sonicTokenAddress = "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38";
 
 const BOX = styled.section`
   text-align: left;
@@ -67,9 +67,9 @@ function App() {
   const [claimPower, setClaimPower] = useState(0);
   const [depositAmount, setDepositAmount] = useState("");
   const [tvl, setTVL] = useState({ eth: 0, usd: 0 });
-  const [coralBalance, setCoralBalance] = useState(0);
+  const [sonicBalance, setSonicBalance] = useState(0);
   const [halvingPercentage, setHalvingPercentage] = useState(100);
-  const [coralPrice, setCoralPrice] = useState(0);
+  const [sonicPrice, setSonicPrice] = useState(0);
   const [userReward, setUserReward] = useState(0);
   const [referral, setReferral] = useState(
     "0x0000000000000000000000000000000000000000"
@@ -129,30 +129,30 @@ function App() {
   
   
 
-  const fetchCoralBalance = async (address) => {
+  const fetchSonicBalance = async (address) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const coralTokenContract = new ethers.Contract(
-      coralTokenAddress,
+    const SonicTokenContract = new ethers.Contract(
+      sonicTokenAddress,
       ["function balanceOf(address account) external view returns (uint256)"],
       provider
     );
     try {
-      const balance = await coralTokenContract.balanceOf(address);
+      const balance = await SonicTokenContract.balanceOf(address);
       const formattedBalance = parseFloat(ethers.utils.formatEther(balance)).toFixed(2); // Limite à 2 décimales
-      setCoralBalance(formattedBalance);
+      setSonicBalance(formattedBalance);
     } catch (err) {
-      console.error("Error fetching Brett balance:", err);
-      setCoralBalance(0);
+      console.error("Error fetching Sonic balance:", err);
+      setSonicBalance(0);
     }
   };
   
   const fetchDynamicData = async () => {
     try {
-      const coralMinerContract = await initializeContract();
-      const balance = await coralMinerContract.getBalance(); // Balance du contrat (TVL en ETH)
+      const sonicMinerContract = await initializeContract();
+      const balance = await sonicMinerContract.getBalance(); // Balance du contrat (TVL en ETH)
       const tokenPrice = await fetchTokenPrice(); // Prix du token en USD
-      const miners = await coralMinerContract.getMyMiners(); // Récupération des miners
-      const rewardInCORAL = userReward;
+      const miners = await sonicMinerContract.getMyMiners(); // Récupération des miners
+      const rewardInSONIC = userReward;
 
       // Conversion des valeurs
       const tvlETH = parseFloat(ethers.utils.formatEther(balance)).toFixed(2);
@@ -161,9 +161,9 @@ function App() {
       return {
         tvlETH,
         tvlUSD,
-        balance: coralBalance,
-        reward: rewardInCORAL,
-        tokenPrice: coralPrice,
+        balance: sonicBalance,
+        reward: rewardInSONIC,
+        tokenPrice: sonicPrice,
         claimPower,
         miners: miners.toString(), // Ajout du nombre de miners
       };
@@ -185,9 +185,9 @@ function App() {
 
   const fetchReward = async () => {
     try {
-      const coralMinerContract = await initializeContract(true); // Avec signer
-      const myPoints = await coralMinerContract.getMyPoints();
-      const reward = await coralMinerContract.calculatePointSell(myPoints);
+      const sonicMinerContract = await initializeContract(true); // Avec signer
+      const myPoints = await sonicMinerContract.getMyPoints();
+      const reward = await sonicMinerContract.calculatePointSell(myPoints);
       const formattedReward = parseFloat(ethers.utils.formatEther(reward)).toFixed(4); // Limite à 2 décimales
       setUserReward(formattedReward);
     } catch (err) {
@@ -199,11 +199,11 @@ function App() {
 
   const fetchContractData = async () => {
     try {
-      const coralMinerContract = await initializeContract(true); // Avec signer
-      const points = await coralMinerContract.getMyPoints();
-      const miners = await coralMinerContract.getMyMiners();
-      const marketPoints = await coralMinerContract.marketPoints();
-      const claimPower = await coralMinerContract.getHalvingPercentage();
+      const sonicMinerContract = await initializeContract(true); // Avec signer
+      const points = await sonicMinerContract.getMyPoints();
+      const miners = await sonicMinerContract.getMyMiners();
+      const marketPoints = await sonicMinerContract.marketPoints();
+      const claimPower = await sonicMinerContract.getHalvingPercentage();
   
       setMyPoints(ethers.utils.formatEther(points));
       setMyMiners(miners.toString());
@@ -230,15 +230,15 @@ function App() {
   
 
   const fetchTVL = async () => {
-    const coralMinerContract = await initializeContract(false); // Pas besoin de signer pour cette opération
+    const sonicMinerContract = await initializeContract(false); // Pas besoin de signer pour cette opération
   
-    if (!coralMinerContract) {
+    if (!sonicMinerContract) {
       setTVL({ eth: 0, usd: 0 });
       return;
     }
   
     try {
-      const balance = await coralMinerContract.getBalance();
+      const balance = await sonicMinerContract.getBalance();
       const tokenPrice = await fetchTokenPrice(); // Implémentez fetchTokenPrice selon vos besoins
       const tvlInEth = parseFloat(ethers.utils.formatEther(balance)).toFixed(2);
       setTVL({
@@ -291,7 +291,7 @@ const fetchTokenPrice = async () => {
 
 
 const depositETH = async (amount) => {
-  const coralMinerContract = await initializeContract();
+  const sonicMinerContract = await initializeContract();
 
   try {
     // Afficher un popup "pending" pendant le traitement
@@ -312,7 +312,7 @@ const depositETH = async (amount) => {
     });
 
     // Lancer la transaction de dépôt d'ETH
-    const tx = await coralMinerContract.depositETH(
+    const tx = await sonicMinerContract.depositETH(
       ethers.utils.parseEther(amount),
       referral, // Utilisation de l'adresse de parrainage
       { value: ethers.utils.parseEther(amount) }
@@ -350,18 +350,18 @@ const depositETH = async (amount) => {
 
   
 
-  const depositCoral = async (amount) => {
+  const depositSonic = async (amount) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const coralTokenContract = new ethers.Contract(
-      coralTokenAddress,
+    const sonicTokenContract = new ethers.Contract(
+      sonicTokenAddress,
       [
         "function approve(address spender, uint256 amount) public returns (bool)",
         "function allowance(address owner, address spender) public view returns (uint256)",
       ],
       signer
     );
-    const coralMinerContract = await initializeContract();
+    const sonicMinerContract = await initializeContract();
   
     try {
       // Afficher un popup "pending" pour le processus global
@@ -379,7 +379,7 @@ const depositETH = async (amount) => {
       });
   
       // Vérification de l'autorisation de transfert du token
-      const allowance = await coralTokenContract.allowance(
+      const allowance = await sonicTokenContract.allowance(
         walletAddress,
         contractAddress
       );
@@ -387,7 +387,7 @@ const depositETH = async (amount) => {
   
       // Si l'autorisation est insuffisante, approuver le contrat pour dépenser des tokens
       if (allowance.lt(amountInWei)) {
-        const approveTx = await coralTokenContract.approve(
+        const approveTx = await sonicTokenContract.approve(
           contractAddress,
           ethers.constants.MaxUint256
         );
@@ -404,7 +404,7 @@ const depositETH = async (amount) => {
         // Lancer un nouveau popup "pending" pour le dépôt
         Swal.fire({
           title: "Processing Deposit...",
-          text: "Your Coral tokens are being deposited.",
+          text: "Your Sonic tokens are being deposited.",
           icon: "info",
           allowOutsideClick: false,
           showConfirmButton: false,
@@ -417,7 +417,7 @@ const depositETH = async (amount) => {
       }
   
       // Déposer les tokens en utilisant l'adresse de parrainage
-      const depositTx = await coralMinerContract.depositCoral(
+      const depositTx = await sonicMinerContract.depositSonic(
         amountInWei,
         referral // Utilisation de l'adresse de parrainage ici
       );
@@ -425,7 +425,7 @@ const depositETH = async (amount) => {
   
       // Afficher un popup de succès après le dépôt
       Swal.fire({
-        title: "Deposit Coral successful!",
+        title: "Deposit Sonic successful!",
         text: "Now, work for your bag!",
         icon: "success",
         confirmButtonText: "OK",
@@ -434,7 +434,7 @@ const depositETH = async (amount) => {
         confirmButtonColor: "#0553F7",
       });
     } catch (err) {
-      console.error("Error during Coral deposit:", err);
+      console.error("Error during Sonic deposit:", err);
   
       // Afficher un message d'erreur si quelque chose ne va pas
       Swal.fire({
@@ -452,7 +452,7 @@ const depositETH = async (amount) => {
   
 
   const compound = async () => {
-    const coralMinerContract = await initializeContract();
+    const sonicMinerContract = await initializeContract();
     
     // Afficher le popup "pending" avant la transaction
     Swal.fire({
@@ -470,7 +470,7 @@ const depositETH = async (amount) => {
   
     try {
       // Appel à la fonction compound du contrat
-      const tx = await coralMinerContract.compound(
+      const tx = await sonicMinerContract.compound(
         "0x0000000000000000000000000000000000000000"
       );
       
@@ -509,7 +509,7 @@ const depositETH = async (amount) => {
     // Affichage du pop-up de pending
     Swal.fire({
       title: "Processing Withdraw...",
-      text: "Your Coral tokens are being deposited.",
+      text: "Your Sonic tokens are being deposited.",
       icon: "info",
       allowOutsideClick: false,
       showConfirmButton: false,
@@ -520,9 +520,9 @@ const depositETH = async (amount) => {
       }
     });
   
-    const coralMinerContract = await initializeContract();
+    const sonicMinerContract = await initializeContract();
     try {
-      const tx = await coralMinerContract.withdraw();
+      const tx = await sonicMinerContract.withdraw();
       await tx.wait(); // Attente de la confirmation de la transaction
   
       // Fermeture du pop-up et affichage du pop-up de succès
@@ -604,7 +604,7 @@ const depositETH = async (amount) => {
   useEffect(() => {
     const getPrice = async () => {
       const price = await fetchTokenPrice();
-      setCoralPrice(price); // Met à jour l'état
+      setSonicPrice(price); // Met à jour l'état
     };
 
     getPrice(); // Récupère immédiatement le prix
@@ -614,7 +614,7 @@ const depositETH = async (amount) => {
   }, []);
 
   // Calcul de la valeur revendiquable
-  const claimableValue = (userReward * coralPrice).toFixed(2);
+  const claimableValue = (userReward * sonicPrice).toFixed(2);
   
   useEffect(() => {
     // Fetch TVL indépendamment de la connexion du wallet
@@ -624,7 +624,7 @@ const depositETH = async (amount) => {
       console.log("Wallet connected");
       fetchReward();
       fetchContractData();
-      fetchCoralBalance(walletAddress);
+      fetchSonicBalance(walletAddress);
     } else {
       // user disconnected
       setMyPoints(0);
@@ -655,7 +655,7 @@ const depositETH = async (amount) => {
       <Section2>
         <hr className="custom-hr"></hr>
         <p className="custom-font">
-          The $CORAL reward pool with the richest daily return and lowest dev
+          The $SONIC reward pool with the richest daily return and lowest dev
           fee, daily income of up to 12% and a referral bonus of 10%. &nbsp;
           <a
             href="https://brett-miner-1.gitbook.io/brett-miner"
@@ -670,7 +670,7 @@ const depositETH = async (amount) => {
           <u>
             <strong>#1 - BUY MINERS :</strong>
           </u>{" "}
-          Start by using your $CORAL or $ETH to purchase miners
+          Start by using your $SONIC or $ETH to purchase miners
         </p>
         <p className="custom-font">
           <u>
@@ -683,7 +683,7 @@ const depositETH = async (amount) => {
           <u>
             <strong>#3 - CLAIM REWARDS:</strong>
           </u>{" "}
-          This will transfer your accumulated $CORAL rewards directly into your
+          This will transfer your accumulated $SONIC rewards directly into your
           wallet
         </p>
       </Section2>
@@ -713,7 +713,7 @@ const depositETH = async (amount) => {
           </Button>
           <div style={{ paddingTop: "15px", paddingBottom: "15px" }}>
             <p className="custom-font" style={{ textAlign: "left" }}>
-              Coral Miner's referral program allows each user to get a{" "}
+              Sonic Miner's referral program allows each user to get a{" "}
               <strong>10% bonus </strong>
               on the initial deposit of the person they refer. This encourages
               users to share the platform and grow the community.
@@ -739,7 +739,7 @@ const depositETH = async (amount) => {
         </div>
 
         <p className="custom-font">
-          The key to maximizing your rewards lies in the quantity of coral you
+          The key to maximizing your rewards lies in the quantity of sonic you
           hold and how frequently you compound them. The more miner you
           accumulate and the more often you reinvest your rewards is the greater
           the potential for earning more rewards
@@ -751,7 +751,7 @@ const depositETH = async (amount) => {
           className="custom-font"
           style={{ fontWeight: "bold", textAlign: "center"}}
         >
-          CORAL MINERS
+          SONIC MINERS
         </h1>
 
         <div
@@ -782,7 +782,7 @@ const depositETH = async (amount) => {
               padding: 0,
             }}
           >
-            {tvl.eth} CORAL (${tvl.usd})
+            {tvl.eth} SONIC (${tvl.usd})
           </p>
         </div>
 
@@ -805,7 +805,7 @@ const depositETH = async (amount) => {
               padding: 0,
             }}
           >
-            Coral Balance:
+            Sonic Balance:
           </p>
           <p
             className="custom-font"
@@ -814,7 +814,7 @@ const depositETH = async (amount) => {
               padding: 0,
             }}
           >
-            {coralBalance} CORAL
+            {sonicBalance} SONIC
           </p>
         </div>
 
@@ -892,9 +892,9 @@ const depositETH = async (amount) => {
           <Button
             className="button-87"
             role="button"
-            onClick={() => depositCoral(depositAmount)}
+            onClick={() => depositSonic(depositAmount)}
           >
-            Deposit CORAL
+            Deposit SONIC
           </Button>
         </h1>
         <h1 style={{ textAlign: "center" }}>
@@ -923,7 +923,7 @@ const depositETH = async (amount) => {
       borderRadius: "5px", // Coins arrondis proportionnels
       boxSizing: "border-box", // Assure que bordures et padding sont inclus
     }}
-    placeholder="$CORAL / $ETH"
+    placeholder="$SONIC / $ETH"
     value={depositAmount}
     onChange={(e) => setDepositAmount(e.target.value)}
   />
@@ -962,7 +962,7 @@ const depositETH = async (amount) => {
               padding: 0,
             }}
           >
-            {userReward} CORAL (${claimableValue})
+            {userReward} SONIC (${claimableValue})
           </p>
         </div>
 

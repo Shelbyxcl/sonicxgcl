@@ -10,12 +10,12 @@ import React from "react";
 import App from "./App";
 
 // Définir la chaîne Sonic Blaze en JavaScript sans types TypeScript
-const sonicBlaze = {
-  id: 57054,
-  name: "Sonic Blaze Testnet",
+const sonicMainet = {
+  id: 146,
+  name: "Sonic Mainet",
   network: "sonic",
   rpcUrls: {
-    default: { http: ["https://rpc.blaze.soniclabs.com"] },
+    default: { http: ["https://rpc.soniclabs.com"] },
   },
   blockExplorers: {
     default: { name: "Sonic Explorer", url: "https://sonic.explorer" }, // Remplacez avec l'URL de l'explorateur de blocs si disponible
@@ -32,7 +32,7 @@ const queryClient = new QueryClient();
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "YOUR_PROJECT_ID",
-  chains: [sonicBlaze], // Ajoutez Sonic Blaze à la liste des chaînes
+  chains: [sonicMainet], // Ajoutez Sonic Blaze à la liste des chaînes
   ssr: true,
 });
 
